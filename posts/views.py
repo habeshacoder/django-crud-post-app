@@ -1,6 +1,6 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status, generics, mixins
+from rest_framework import status, generics, mixins, viewsets
 from rest_framework.decorators import api_view, APIView
 
 from .models import PostModel
@@ -9,17 +9,16 @@ from django.shortcuts import get_object_or_404
 
 
 # create class based apiviews for create and list posts
-class PostListCreateView(
-    generics.GenericAPIView, mixins.CreateModelMixin, mixins.ListModelMixin
-):
-    serializer_class = PostModelSerializer
-    queryset = PostModel.objects.all()
+class PostViewSet(viewsets.ViewSet):
+    def list(self, request: Request):
+        queryset = PostModel.objects.all()
+        serializer = PostModelSerializer(instance=queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    def get(self, request: Request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request: Request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    def retrieve(self, request: Request, pk=None):
+        post = get_object_or_404(PostModel, pk=pk)
+        serializer = PostModelSerializer(instance=post)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class UpdateDeleteDetailView(
