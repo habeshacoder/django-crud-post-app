@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "posts",
+    "account",
     # third-party app
     "rest_framework",
 ]
@@ -69,7 +70,7 @@ TEMPLATES = [
         },
     },
 ]
-
+AUTH_USER_MODEL = "account.CustomUser"
 WSGI_APPLICATION = "simpleblog.wsgi.application"
 
 
