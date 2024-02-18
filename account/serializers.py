@@ -11,21 +11,20 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ["id", "email", "spouse_name", "username", "password"]
+        fields = ["email", "username", "password"]
 
+    def validate(self, attr):
+        print("validation is running.........")
+        email_exists = CustomUser.objects.filter(email=attr["email"]).exists()
+        if email_exists:
+            raise ValidationError("Email has already been used.")
+        return super().validate(attr)
 
-def validate(self, attr):
-
-    email_exists = CustomUser.objects.filter(email=attr["email"]).exists()
-    if email_exists:
-        raise ValidationError("email has already been used")
-    return super.validate(attr)
-
-
-def create(self, validated_data):
-    password = validated_data.pop("password")
-    user = super.create(validated_data)
-    user.set_password(password)
-    user.save()
-    Token.objects.create(user=user)
-    return user
+    def create(self, validated_data):
+        print("creation is running.........")
+        password = validated_data.pop("password")
+        user = super().create(validated_data)
+        user.set_password(password)
+        user.save()
+        Token.objects.create(user=user)
+        return user
